@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Transforms;
@@ -29,7 +30,7 @@ public partial class SpawnerSystem : SystemBase
         Enabled = false;
     }
 
-
+    [BurstCompile]
     public partial struct SpawnAndDisableJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
@@ -39,13 +40,14 @@ public partial class SpawnerSystem : SystemBase
         {
             
             var entity = ecb.Instantiate(index, spawn.SpawnEntity);
-            //ecb.SetEnabled(index, entity, false);
             ecb.SetComponent(index, entity, new LocalTransform 
             { 
-                Position = new Unity.Mathematics.float3(1, 1, 1) * index * 0.1f ,
+                Position = Unity.Mathematics.float3.zero ,
                 Scale = 0.5f
             });
             ecb.AddComponent(index, entity, new SpawnTargetTag());
+
+            //아직 스폰되지 않은 상태이여서 , entity의 인덱스가 음수값으로 나와요.
         }
     }
 }

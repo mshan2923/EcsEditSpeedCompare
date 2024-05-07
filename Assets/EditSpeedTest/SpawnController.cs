@@ -94,5 +94,6 @@ public class SpawnControllerBaker : Baker<SpawnController>
                         );
         }
 
+        //TransformUsageFlags을 Dynamic으로 해야 보여요. (LocalTransform외 여러 컴포넌트 추가됨)
     }
 }

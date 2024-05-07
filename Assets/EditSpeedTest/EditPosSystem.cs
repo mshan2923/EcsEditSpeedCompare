@@ -116,6 +116,7 @@ public partial class EditPosSystem : SystemBase
         public int seed;
         public Vector3 SpawnArea;
         public void Execute([EntityIndexInQuery] int index, Entity entity, in SpawnTargetTag tag, ref LocalTransform transform)
+            // ref 는 쓰기전용 , in 은 읽기 전용 , 읽고쓰기 동시엔 불가해 써야 하는경우 NativeArray<>등에 값을 복사해 사용
         {
             var random = new Unity.Mathematics.Random((uint)Mathf.Max(seed + index, 1));
             random.NextFloat();//왜인지 모르겠지만 항상 최솟값
