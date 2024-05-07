@@ -9,7 +9,7 @@ using System;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-[UpdateAfter(typeof(SpawnerSystem))]
+[UpdateAfter(typeof(SpawnerSystem))]//스폰이 완료된후 업데이트 시작
 public partial class EditPosSystem : SystemBase
 {
     NativeArray<Entity> spanwed;

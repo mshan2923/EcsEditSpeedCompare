@@ -29,6 +29,24 @@ public class SpawnController : MonoBehaviour
             isRunning = value;
         }
     }
+
+    public float AutoStopSecond = 5f;
+    [HideInInspector] public float counter = 0;
+
+    public IEnumerator TimerCoroutine(float vaule)
+    {
+        counter = 0;
+        float AvgDelta = Time.deltaTime;
+        while ((counter <= vaule) && IsRunning)
+        {
+            counter += Time.deltaTime;
+            AvgDelta = (AvgDelta + Time.deltaTime) * 0.5f; 
+            yield return null;
+        }
+        Debug.Log($"{RunType} : Average FPS : {1 / AvgDelta}");
+
+        IsRunning = false;
+    }
 }
 
 [CustomEditor(typeof(SpawnController))]
@@ -43,6 +61,12 @@ public class SpawnControllerEditor : Editor
         {
             SpawnController.instance.IsRunning = !SpawnController.instance.IsRunning;
         }
+
+        if (GUILayout.Button(SpawnController.instance.IsRunning ? $" (Running) {(SpawnController.instance.AutoStopSecond - SpawnController.instance.counter):0.#}s Left" : " (Stoped)Auto Stop"))
+        {
+            SpawnController.instance.IsRunning = !SpawnController.instance.IsRunning;
+            SpawnController.instance.StartCoroutine(SpawnController.instance.TimerCoroutine(SpawnController.instance.AutoStopSecond));
+        }
     }
 }
 
@@ -50,7 +74,7 @@ public struct SpawnComponent : IComponentData
 {
     public Entity SpawnEntity;
 }
-public struct SpawnTargetTag : IComponentData { }
+public struct SpawnTargetTag : IComponentData { }//추가해도 성능지장 없음 , 단순 구별 용도
 
 public class SpawnControllerBaker : Baker<SpawnController>
 {
@@ -58,8 +82,6 @@ public class SpawnControllerBaker : Baker<SpawnController>
     {
         SpawnController.instance = authoring;
 
-        //if (authoring.SpawnPrefab != null)
-        //    authoring.SpawnEntity = GetEntity(authoring.SpawnPrefab, TransformUsageFlags.Dynamic);
         if (authoring.SpawnPrefab != null)
         {
             AddComponent(
